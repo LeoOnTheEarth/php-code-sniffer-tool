@@ -1,0 +1,5 @@
+{
+    "symfony/Symfony2": "symfony/Symfony2.json",
+    "smstw/SMSTWJoomla": "smstw/SMSTWJoomla.json",
+    "joomla/Joomla": "joomla/Joomla.json"
+}
