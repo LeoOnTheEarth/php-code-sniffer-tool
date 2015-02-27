@@ -1,0 +1,10 @@
+{
+  "alias": "phpcs-tool.phar",
+  "chmod": "0755",
+  "extract": true,
+  "git-commit": "git-commit",
+  "git-version": "git-version",
+  "main": "main.php",
+  "output": "phpcs-tool-@git-version@.phar",
+  "stub": true
+}
