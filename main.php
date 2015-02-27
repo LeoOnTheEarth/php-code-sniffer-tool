@@ -1,4 +1,11 @@
+#!/usr/bin/env php
 <?php
+/**
+ * Part of php-code-sniffer-tool project.
+ *
+ * @copyright Copyright (C) 2015 LeoOnTheEarth
+ * @license MIT
+ */
 
 createInstallDir();
 installComposer();
