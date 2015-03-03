@@ -378,10 +378,10 @@ function getInstallDir()
 
     if (preg_match('#^Windows#i', $os)) {
         // Windows
-        $configPath = getenv('HOMEDRIVE') . getenv("HOMEPATH") . '\\' . $folderName;
+        $configPath = getenv('HOMEDRIVE') . getenv('HOMEPATH') . '\\' . $folderName;
     } else {
         // Linux or Mac OSX
-        $configPath = '~/' . $folderName;
+        $configPath = getenv('HOME') . '/' . $folderName;
     }
 
     return $configPath;
