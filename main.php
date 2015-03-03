@@ -184,9 +184,7 @@ function readComposerFile()
         }
     }
 
-    if (!array_key_exists('squizlabs/php_codesniffer', $composer['require'])) {
-        $composer['require']['squizlabs/php_codesniffer'] = '*';
-    }
+    $composer['require']['squizlabs/php_codesniffer'] = '1.5.6';
 
     return $composer;
 }
