@@ -20,7 +20,7 @@ function main()
 {
     $argv = $_SERVER['argv'];
     $command = 'list';
-    $commands = ['list', 'show', 'install', 'help'];
+    $commands = ['list', 'show', 'install', 'update', 'help'];
 
     if (isset($argv[1])) {
         $command = $argv[1];
@@ -83,13 +83,15 @@ function show()
 /**
  * Install code sniffer with a given code sniffer name (ex: symfony/Symfony2)
  *
- * @param string $snifferName Code sniffer name (ex: symfony/Symfony2)
+ * @param string $snifferName  Code sniffer name (ex: symfony/Symfony2)
+ * @param string $forceInstall Decide whether to force install / update composer
  *
  * @return void
  */
-function install($snifferName)
+function install($snifferName, $forceInstall = false)
 {
-    $installDir = getInstallDir();
+    $installDir = getInstallDir()  . '/';
+    $vendorDir = $installDir . 'vendor/';
     $composer = readComposerFile();
     $list = api('index.json');
 
@@ -100,7 +102,7 @@ function install($snifferName)
     // Get sniffer config file
     $package = api($snifferName . '.json');
 
-    $doInstall = false;
+    $doInstall = $forceInstall;
     $repoIndex = -1;
     $paths = array();
 
@@ -115,7 +117,7 @@ function install($snifferName)
         }
 
         list($folderName) = explode('/', $repo['package']['name']);
-        $paths[] = $installDir . '/vendor/' . $folderName;
+        $paths[] = $vendorDir . $folderName;
     }
 
     if (-1 === $repoIndex) {
@@ -126,7 +128,7 @@ function install($snifferName)
         );
 
         list($folderName) = explode('/', $package['name']);
-        $paths[] = $installDir . '/vendor/' . $folderName;
+        $paths[] = $vendorDir . $folderName;
     }
 
     $composer['require'][$snifferName] = $package['version'];
@@ -143,11 +145,11 @@ function install($snifferName)
     $output = sprintf('<?php $phpCodeSnifferConfig=%s; ?>', var_export($config, true));
 
     // Write CodeSniffer.conf
-    file_put_contents($installDir . '/vendor/squizlabs/php_codesniffer/CodeSniffer.conf', $output);
+    file_put_contents($vendorDir . 'squizlabs/php_codesniffer/CodeSniffer.conf', $output);
 
     echo PHP_EOL . 'Install complete' . PHP_EOL;
 
-    printf('phpcs is locate at "%s"' . PHP_EOL, realpath($installDir . '/vendor/bin/phpcs'));
+    printf('phpcs is locate at "%s"' . PHP_EOL, realpath($vendorDir . 'bin/phpcs'));
 }
 
 /**
@@ -159,7 +161,7 @@ function install($snifferName)
  */
 function update($snifferName)
 {
-    install($snifferName);
+    install($snifferName, true);
 }
 
 /**
