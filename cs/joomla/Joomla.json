@@ -1,6 +1,7 @@
 {
     "name": "joomla/Joomla",
     "version": "1.0.0",
+    "phpcs-branch": "1.x",
     "dist": {
         "url": "https://github.com/joomla/coding-standards/archive/master.zip",
         "type": "zip"

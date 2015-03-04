@@ -1,6 +1,7 @@
 {
     "name": "symfony/Symfony2",
     "version": "2.0.1",
+    "phpcs-branch": "2.x",
     "dist": {
         "url": "https://github.com/escapestudios/Symfony2-coding-standard/archive/master.zip",
         "type": "zip"

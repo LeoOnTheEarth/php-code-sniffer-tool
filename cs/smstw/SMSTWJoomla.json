@@ -1,6 +1,7 @@
 {
     "name": "smstw/SMSTWJoomla",
     "version": "1.0.0",
+    "phpcs-branch": "1.x",
     "dist": {
         "url": "https://github.com/smstw/sms-php-code-sniffer/archive/new-sniffer-name.zip",
         "type": "zip"
