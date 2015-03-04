@@ -84,7 +84,7 @@ function show()
  * Install code sniffer with a given code sniffer name (ex: symfony/Symfony2)
  *
  * @param string $snifferName  Code sniffer name (ex: symfony/Symfony2)
- * @param string $forceInstall Decide whether to force install / update composer
+ * @param bool   $forceInstall Decide whether to force install / update composer
  *
  * @return void
  */
