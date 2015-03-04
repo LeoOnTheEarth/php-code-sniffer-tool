@@ -5,7 +5,7 @@ A management tool for php code sniffers
 
 ## Installation
 
-Download [phpcs-tool](https://github.com/LeoOnTheEarth/php-code-sniffer-tool/releases/download/0.0.4/phpcs-tool.phar)
+Download [phpcs-tool](https://github.com/LeoOnTheEarth/php-code-sniffer-tool/releases/download/0.0.5/phpcs-tool.phar)
 
 ## List available code sniffers
 
