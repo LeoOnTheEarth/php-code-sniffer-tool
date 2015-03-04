@@ -156,8 +156,8 @@ function install($snifferName, $forceInstall = false)
     $phpcsSourceFilename = __DIR__ . '/bin/phpcs';
     $phpcsTargetFilename = $installDir . '/bin/phpcs';
 
-    file_put_contents($phpcsTargetFilename, file_get_contents($phpcsSourceFilename));
-    file_put_contents($phpcsTargetFilename . '.bat', file_get_contents($phpcsSourceFilename . '.bat'));
+    writeConsoleFile($phpcsSourceFilename, $phpcsTargetFilename);
+    writeConsoleFile($phpcsSourceFilename . '.bat', $phpcsTargetFilename . '.bat');
 
     printf('phpcs is locate at "%s"' . PHP_EOL, realpath($phpcsTargetFilename));
 }
@@ -354,6 +354,21 @@ function supportPHPCodeSnifferVersions()
 function writeComposerFile(array $composer)
 {
     return file_put_contents(getComposerFilename(), json_encode($composer));
+}
+
+/**
+ * Write console files
+ *
+ * @param array $source Source filename
+ * @param array $target Target filename
+ *
+ * @return void
+ */
+function writeConsoleFile($source, $target)
+{
+    file_put_contents($target, file_get_contents($source));
+
+    chmod($target, 0755);
 }
 
 /**
