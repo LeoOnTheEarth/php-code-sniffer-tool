@@ -1,0 +1,81 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Part of php-code-sniffer-tool project.
+ *
+ * @copyright Copyright (C) 2015 LeoOnTheEarth
+ * @license MIT
+ */
+
+$standard = '';
+
+foreach ($argv as $arg) {
+    if (preg_match('/\-\-standard=(.*)/', $arg, $match)) {
+        if (isset($match[1])) {
+            $standard = $match[1];
+
+            if (!empty($standard)) {
+                break;
+            }
+        }
+    }
+}
+
+$installedSnifferFilename = __DIR__ . '/../installed.json';
+
+if (file_exists($installedSnifferFilename)) {
+    $installedSniffers = @json_decode(file_get_contents($installedSnifferFilename), true);
+
+    if (!is_array($installedSniffers)) {
+        $installedSniffers = array();
+    }
+} else {
+    $installedSniffers = array();
+}
+
+$selectedPHPCSBranch = '1.x';
+
+foreach ($installedSniffers as $snifferName => $sniffer) {
+    list(,$snifferStandard) = explode('/', $snifferName);
+
+    if ($standard === $snifferStandard) {
+        $selectedPHPCSBranch = $sniffer['phpcs-branch'];
+
+        break;
+    }
+}
+
+switch ($selectedPHPCSBranch) {
+    case '2.x':
+        run2x();
+        break;
+
+    case '1.x':
+    default:
+        run1x();
+        break;
+}
+
+function run1x()
+{
+    error_reporting(E_ALL | E_STRICT);
+
+    include_once __DIR__ . '/../vendor/squizlabs/phpcs-1.x/CodeSniffer/CLI.php';
+
+    $phpcs = new PHP_CodeSniffer_CLI();
+
+    $phpcs->checkRequirements();
+
+    $numErrors = $phpcs->process();
+
+    exit($numErrors === 0 ? 0 : 1);
+}
+
+function run2x()
+{
+    include_once __DIR__ . '/../vendor/squizlabs/phpcs-2.x/CodeSniffer/CLI.php';
+
+    $cli = new PHP_CodeSniffer_CLI();
+
+    $cli->runphpcs();
+}

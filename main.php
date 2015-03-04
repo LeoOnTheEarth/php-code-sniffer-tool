@@ -90,9 +90,6 @@ function show()
  */
 function install($snifferName, $forceInstall = false)
 {
-    $installDir = getInstallDir()  . '/';
-    $vendorDir = $installDir . 'vendor/';
-    $composer = readComposerFile();
     $list = api('index.json');
 
     if (!in_array($snifferName, $list)) {
@@ -102,26 +99,30 @@ function install($snifferName, $forceInstall = false)
     // Get sniffer config file
     $package = api($snifferName . '.json');
 
+    $installDir = getInstallDir()  . '/';
+    $vendorDir = $installDir . 'vendor/';
+    $composer = readComposerFile();
+    $installedSniffers = getInstalledSniffers();
     $doInstall = $forceInstall;
-    $repoIndex = -1;
     $paths = array();
 
     foreach ($composer['repositories'] as $index => $repo) {
         if ($snifferName === $repo['package']['name']) {
-            $repoIndex = $index;
-
             if ($repo['package']['version'] !== $package['version']) {
                 $doInstall = true;
                 $composer['repositories'][$index]['package'] = $package;
             }
         }
 
-        list($folderName) = explode('/', $repo['package']['name']);
-        $paths[] = $vendorDir . $folderName;
+        if (array_key_exists($repo['package']['name'], $installedSniffers)) {
+            list($folderName) = explode('/', $repo['package']['name']);
+            $paths[] = $vendorDir . $folderName;
+        }
     }
 
-    if (-1 === $repoIndex) {
+    if (!array_key_exists($snifferName, $installedSniffers)) {
         $doInstall = true;
+
         $composer['repositories'][] = array(
             'type' => 'package',
             'package' => $package,
@@ -137,6 +138,7 @@ function install($snifferName, $forceInstall = false)
 
     if ($doInstall) {
         composerInstall();
+        updateInstalledSniffers($snifferName, $package['phpcs-branch']);
     }
 
     $paths = array_unique($paths);
@@ -145,11 +147,19 @@ function install($snifferName, $forceInstall = false)
     $output = sprintf('<?php $phpCodeSnifferConfig=%s; ?>', var_export($config, true));
 
     // Write CodeSniffer.conf
-    file_put_contents($vendorDir . 'squizlabs/php_codesniffer/CodeSniffer.conf', $output);
+    foreach (supportPHPCodeSnifferVersions() as $branch => $version) {
+        file_put_contents($vendorDir . 'squizlabs/phpcs-' . $branch . '/CodeSniffer.conf', $output);
+    }
 
     echo PHP_EOL . 'Install complete' . PHP_EOL;
 
-    printf('phpcs is locate at "%s"' . PHP_EOL, realpath($vendorDir . 'bin/phpcs'));
+    $phpcsSourceFilename = __DIR__ . '/bin/phpcs';
+    $phpcsTargetFilename = $installDir . '/bin/phpcs';
+
+    file_put_contents($phpcsTargetFilename, file_get_contents($phpcsSourceFilename));
+    file_put_contents($phpcsTargetFilename . '.bat', file_get_contents($phpcsSourceFilename . '.bat'));
+
+    printf('phpcs is locate at "%s"' . PHP_EOL, realpath($phpcsTargetFilename));
 }
 
 /**
@@ -162,6 +172,69 @@ function install($snifferName, $forceInstall = false)
 function update($snifferName)
 {
     install($snifferName, true);
+}
+
+/**
+ * Update installed sniffers
+ *
+ * @param string $snifferName The installed sniffer name
+ * @param string $version     The version of PHP Code Sniffer
+ *
+ * @return void
+ */
+function updateInstalledSniffers($snifferName, $version)
+{
+    $supportPHPCodeSnifferBranches = array_keys(supportPHPCodeSnifferVersions());
+
+    if (!in_array($version, $supportPHPCodeSnifferBranches)) {
+        error(
+            sprintf(
+                'The sniffer package phpcs-branch "%s" is not valid! (currently support %s only)',
+                $version,
+                implode(', ', $supportPHPCodeSnifferBranches)
+            )
+        );
+    }
+
+    $sniffers = getInstalledSniffers();
+
+    if (!array_key_exists($snifferName, $sniffers)) {
+        $sniffers[$snifferName] = array();
+    }
+
+    $sniffers[$snifferName]['phpcs-branch'] = $version;
+
+    file_put_contents(getInstalledSnifferFilename(), json_encode($sniffers));
+}
+
+/**
+ * Get installed sniffers
+ *
+ * @return  array
+ */
+function getInstalledSniffers()
+{
+    $installedSnifferFilename = getInstalledSnifferFilename();
+
+    if (file_exists($installedSnifferFilename)) {
+        $return = @json_decode(file_get_contents($installedSnifferFilename), true);
+
+        if (is_array($return)) {
+            return $return;
+        }
+    }
+
+    return array();
+}
+
+/**
+ * Get installed sniffer filename
+ *
+ * @return string
+ */
+function getInstalledSnifferFilename()
+{
+    return getInstallDir() . '/installed.json';
 }
 
 /**
@@ -182,15 +255,93 @@ function readComposerFile()
         }
     }
 
+    setPHPCSComposerSchema($composer);
+
+    return $composer;
+}
+
+/**
+ * Set phpcs composer schema
+ *
+ * @param array $composer Composer schema
+ *
+ * @return void
+ */
+function setPHPCSComposerSchema(&$composer)
+{
+    $schema = getPHPCSComposerSchema();
+
     foreach (array('repositories', 'require') as $key) {
         if (!array_key_exists($key, $composer)) {
             $composer[$key] = array();
         }
     }
 
-    $composer['require']['squizlabs/php_codesniffer'] = '1.5.6';
+    foreach ($schema['repositories'] as $repoName => $package) {
+        $repoIndex = -1;
 
-    return $composer;
+        foreach ($composer['repositories'] as $index => $repo) {
+            if ($repoName === $repo['package']['name']) {
+                $repoIndex = $index;
+            }
+        }
+
+        if (-1 === $repoIndex) {
+            $composer['repositories'][] = $package;
+        } else {
+            $composer['repositories'][$repoIndex] = $package;
+        }
+
+        $composer['require'][$repoName] = $schema['require'][$repoName];
+    }
+
+    unset($composer['require']['squizlabs/php_codesniffer']);
+}
+
+/**
+ * Get phpcs composer schema
+ *
+ * @return array
+ */
+function getPHPCSComposerSchema()
+{
+    $versions = supportPHPCodeSnifferVersions();
+
+    $schema = array(
+        'repositories' => array(),
+        'require' => array(),
+    );
+
+    foreach ($versions as $branch => $version) {
+        $schema['repositories']['squizlabs/phpcs-' . $branch] = array(
+            "type" => "package",
+            "package" => array(
+                "name" => "squizlabs/phpcs-" . $branch,
+                "version" => $version,
+                "dist" => array(
+                    "url" => 'https://github.com/squizlabs/PHP_CodeSniffer/archive/' . $version . '.zip',
+                    "type" => "zip",
+                ),
+            ),
+        );
+
+        $schema['require']['squizlabs/phpcs-' . $branch] = $version;
+    }
+
+    return $schema;
+}
+
+/**
+ * Support PHP Code Sniffer versions
+ *
+ * @return array
+ */
+function supportPHPCodeSnifferVersions()
+{
+    return array(
+        '1.x' => '1.5.6',
+        '2.x' => '2.3.0',
+    );
 }
 
 /**
@@ -373,6 +524,14 @@ function createInstallDir()
         printf('Create install directory: "%s"' . PHP_EOL, $dir);
 
         mkdir($dir, 0777, true);
+    }
+
+    $binDir = $dir . '/bin';
+
+    if (!is_dir($binDir)) {
+        printf('Create bin directory: "%s"' . PHP_EOL, $binDir);
+
+        mkdir($binDir, 0777);
     }
 }
 
