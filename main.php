@@ -176,6 +176,10 @@ function readComposerFile()
 
     if (file_exists($composerFilename)) {
         $composer = @json_decode(file_get_contents($composerFilename), true);
+
+        if (!is_array($composer)) {
+            $composer = array();
+        }
     }
 
     foreach (array('repositories', 'require') as $key) {
@@ -241,7 +245,13 @@ function api($filename)
 
     $result = file_get_contents($url);
 
-    return @json_decode($result, true);
+    $return = @json_decode($result, true);
+
+    if (is_array($return)) {
+        return $return;
+    }
+
+    return array();
 }
 
 /**
