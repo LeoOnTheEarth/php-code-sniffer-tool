@@ -76,8 +76,27 @@ function main()
 function show()
 {
     $list = api('index.json');
+    $installedSnifferNames = array_keys(getInstalledSniffers());
+    $maxLength = 0;
 
-    echo implode(PHP_EOL, $list) . PHP_EOL;
+    foreach ($list as $snifferName) {
+        $length = strlen($snifferName);
+
+        if ($length > $maxLength) {
+            $maxLength = $length;
+        }
+    }
+
+    foreach ($list as $snifferName) {
+        $length = strlen($snifferName);
+        $installed = '';
+
+        if (in_array($snifferName, $installedSnifferNames)) {
+            $installed = str_pad('(Installed)', 15 + $maxLength - $length, ' ', STR_PAD_LEFT);
+        }
+
+        echo $snifferName . $installed . PHP_EOL;
+    }
 }
 
 /**
