@@ -30,5 +30,5 @@ $ php phpcs-tool.phar install symfony/Symfony2
 Show available code sniffer with phpcs command
 
 ```bash
-$ ~/.php-code-sniffer-tool/vendor/bin/phpcs -i
+$ ~/.php-code-sniffer-tool/bin/phpcs -i
 ```
