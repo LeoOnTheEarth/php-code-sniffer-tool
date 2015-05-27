@@ -32,3 +32,9 @@ Show available code sniffer with phpcs command
 ```bash
 $ ~/.php-code-sniffer-tool/bin/phpcs -i
 ```
+
+## Update a code sniffer
+
+```bash
+$ php phpcs-tool.phar update symfony/Symfony2
+```
