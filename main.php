@@ -125,17 +125,19 @@ function install($snifferName, $forceInstall = false)
     $doInstall = $forceInstall;
     $paths = array();
 
-    foreach ($composer['repositories'] as $index => $repo) {
+    foreach ($composer['repositories'] as $index => &$repo) {
         if ($snifferName === $repo['package']['name']) {
             if ($repo['package']['version'] !== $package['version']) {
                 $doInstall = true;
-                $composer['repositories'][$index]['package'] = $package;
+                $repo['package'] = $package;
             }
         }
 
         if (array_key_exists($repo['package']['name'], $installedSniffers)) {
             list($folderName) = explode('/', $repo['package']['name']);
-            $paths[] = $vendorDir . $folderName;
+            $sniffFolderName = isset($repo['package']['sniff-dir']) ? $repo['package']['sniff-dir'] : '';
+            $sniffFolderName = '/' . trim($sniffFolderName, '/ ');
+            $paths[] = $vendorDir . $folderName . $sniffFolderName;
         }
     }
 
