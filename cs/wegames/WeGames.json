@@ -1,6 +1,6 @@
 {
     "name": "wegames/WeGames",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "phpcs-branch": "1.x",
     "dist": {
         "url": "https://github.com/LeoOnTheEarth/base-coding-standard/archive/5bbca2964c6fa8fd1c81abdd134a8e7c37fd84d1.zip",
