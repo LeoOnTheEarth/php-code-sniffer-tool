@@ -1,10 +1,10 @@
 {
     "name": "symfony/Symfony2",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "phpcs-branch": "2.x",
     "sniff-dir": "Symfony",
     "dist": {
-        "url": "https://github.com/escapestudios/Symfony2-coding-standard/archive/master.zip",
+        "url": "https://github.com/djoos/Symfony-coding-standard/archive/927d89a0dda91ea252b88176c721a551b3a4ae40.zip",
         "type": "zip"
     }
 }
