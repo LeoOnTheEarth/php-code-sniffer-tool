@@ -1,5 +1,5 @@
 [
-    "symfony/Symfony2",
+    "symfony/Symfony",
     "smstw/SMSTWJoomla",
     "joomla/Joomla",
     "wegames/WeGames"
