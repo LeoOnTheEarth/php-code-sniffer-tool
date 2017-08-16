@@ -1,6 +1,6 @@
 {
     "name": "symfony/Symfony",
-    "version": "2.0.4",
+    "version": "2.0.5",
     "phpcs-branch": "2.x",
     "sniff-dir": "Symfony",
     "dist": {
