@@ -1,8 +1,8 @@
 {
     "name": "symfony/Symfony2",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "phpcs-branch": "2.x",
-    "sniff-dir": "Symfony2",
+    "sniff-dir": "Symfony",
     "dist": {
         "url": "https://github.com/escapestudios/Symfony2-coding-standard/archive/master.zip",
         "type": "zip"
