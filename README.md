@@ -38,3 +38,9 @@ $ ~/.php-code-sniffer-tool/bin/phpcs -i
 ```bash
 $ php phpcs-tool.phar update symfony/Symfony2
 ```
+
+## TODO
+
+- Add `remove` command to remove a sniffer
+- Add `self-update` command to update `phpcs-tool.phar` file
+- Add CodeSniffer 3.x support
