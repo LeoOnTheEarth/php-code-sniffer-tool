@@ -17,7 +17,6 @@ Output example:
 
 ```
 symfony/Symfony2
-smstw/SMSTWJoomla
 joomla/Joomla
 ```
 
