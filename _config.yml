@@ -1,0 +1,8 @@
+title: PHP Code Sniffer Tool
+description: A management tool for php code sniffers
+google_analytics: UA-60241994-1
+show_downloads: true
+theme: jekyll-theme-slate
+
+gems:
+  - jekyll-mentions
