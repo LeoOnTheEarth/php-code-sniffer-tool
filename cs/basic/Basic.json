@@ -1,0 +1,9 @@
+{
+    "name": "basic/Basic",
+    "version": "1.0.6",
+    "phpcs-branch": "1.x",
+    "dist": {
+        "url": "https://github.com/LeoOnTheEarth/base-coding-standard/archive/f94a23807b2a895057ff841978af74b08fa4b532.zip",
+        "type": "zip"
+    }
+}
